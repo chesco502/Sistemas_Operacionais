@@ -1,5 +1,6 @@
 
 
+
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <malloc.h>
@@ -13,12 +14,12 @@
 #include <semaphore.h>
 // 64kB stack
 #define FIBER_STACK 1024*64
-#define thread 10
-#define LEFT (i+N-1)%N 
-#define RIGHT (i+1)%N
+#define thread 200
+#define LEFT (i+thread-1)%thread
+#define RIGHT (i+1)%thread
 ///////////////////
-pthread_t filosofo[thread]; // threads para cada filósofo
-sem_t garfo[thread]; // semáforos para cada garfo
+pthread_t filosofo[thread];	// threads para cada filC3sofo
+sem_t garfo[thread];		// semC!foros para cada garfo
 sem_t mutex;
 ///////////////////
 struct c
@@ -30,23 +31,36 @@ conta from, to;
 int valor;
 
 // The child thread will execute this function
-void
-*transferencia (void *arg)
+void *
+transferencia (void *arg)
 {
- 
-  
- 
-  if (from.saldo >= valor)
-     {				// 2
-      
-      from.saldo -= valor;
-      to.saldo += valor;
+  int i = *(int *) arg;
+  while (1)
+    {
+
+      sleep (rand () % 5);
+      sem_wait (&mutex);
+      sem_wait (&garfo[LEFT]);
+      sem_wait (&garfo[RIGHT]);
+      if (from.saldo >= valor)
+	{			// 2
+
+	  from.saldo -= valor;
+	  to.saldo += valor;
+	  printf ("TransferC*ncia concluC-da com sucesso!\n");
+	  printf ("Saldo de c1: %d\n", from.saldo);
+	  printf ("Saldo de c2: %d\n", to.saldo);
+	}
+
+      sem_post (&garfo[RIGHT]);
+      sem_post (&garfo[LEFT]);
+      sem_post (&mutex);
+      pthread_exit (NULL);
     }
-  printf ("TransferC*ncia concluC-da com sucesso!\n");
-  printf ("Saldo de c1: %d\n", from.saldo);
-  printf ("Saldo de c2: %d\n", to.saldo);
-  return 0;
+  
 }
+
+
 
 int
 main ()
@@ -58,25 +72,28 @@ main ()
   from.saldo = 200;
   to.saldo = 200;
   printf ("Transferindo 10 para a conta c2\n");
-  valor = 10;
-  
-    int  id[thread];
-    sem_init(&mutex, 0, 1); // inicializa semáforo mutex
-    for (i = 0; i < thread; i++) {
-        sem_init(&garfo[i], 0, 1); // inicializa semáforo de cada garfo
-    }
-    for (i = 0; i < thread; i++) {
-        id[i] = i;
-        pthread_create(&filosofo[i], NULL,transferencia , (void *) &id[i]); // cria thread para cada filósofo
-    }
-    for (i = 0; i < thread; i++) {
-        pthread_join(filosofo[i], NULL); // aguarda término das threads
-    }
-    return 0;
+  valor = 1;
 
-  
+  int id[thread];
+  sem_init (&mutex, 0, 1);	// inicializa semC!foro mutex
+  for (i = 0; i < thread; i++)
+    {
+      sem_init (&garfo[i], 0, 1);	// inicializa semC!foro de cada garfo
+    }
+  for (i = 0; i < thread; i++)
+    {
+      id[i] = i;
+      pthread_create (&filosofo[i], NULL, transferencia, (void *) &id[i]);	// cria thread para cada filC3sofo
+    }
+  for (i = 0; i < thread; i++)
+    {
+      pthread_join (filosofo[i], NULL);	// aguarda tC)rmino das threads
+    }
+  return 0;
+
+
   free (stack);
   printf ("TransferC*ncias concluC-das e memC3ria liberada.\n");
-  
+
   return 0;
 }
