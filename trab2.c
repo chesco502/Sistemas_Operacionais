@@ -1,7 +1,5 @@
 
 
-
-
 #define _GNU_SOURCE
 #include <stdlib.h>
 #include <malloc.h>
@@ -16,8 +14,8 @@
 // 64kB stack
 #define FIBER_STACK 1024*64
 #define thread 100
-#define LEFT (i+thread-1)%thread
-#define RIGHT (i+1)%thread
+
+
 #include <string.h>
 ///////////////////
 pthread_t filosofo[thread];	// threads para cada filC3sofo
@@ -50,29 +48,46 @@ transferencia (void *arg)
 	{
 	  sem_post (&garfo);
 	  sem_post (&mutex);
+	  //printf ("finalizando thread :%i\n", i);
 	  pthread_exit (NULL);
 	}
-      if (from->saldo < 100)
+      if (rand () % 4 < 2)
 	{
-	  valor = from->saldo;
+
+	  from = &A;
+	  to = &B;
+
+	}
+      else
+	{
+	  from = &B;
+	  to = &A;
 	}
 
-      from->saldo -= valor;
-      to->saldo += valor;
+    
 
-
-
-      printf ("TransferC*ncia concluC-da com sucesso!\n");
-      printf ("Saldo de c1: %d\n", from->saldo);
-      printf ("Saldo de c2: %d\n", to->saldo);
-      printf ("hello da thread :%i\n", i);
-      sem_post (&garfo);
-      sem_post (&mutex);
-
-
-
+  if (from->saldo < valor)
+    {
+      valor = from->saldo;
     }
-}
+
+  from->saldo -= valor;
+  to->saldo += valor;
+
+
+
+  printf ("TransferC*ncia concluC-da com sucesso!\n");
+  printf ("Saldo de c1: %d\n", A.saldo);
+  printf ("Saldo de c2: %d\n", B.saldo);
+  printf ("hello da thread :%i\n", i);
+  sem_post (&garfo);
+  sem_post (&mutex);
+
+
+
+
+}}
+
 
 
 
@@ -88,33 +103,12 @@ main ()
   printf ("a");
   stack = malloc (FIBER_STACK);
 
-  A.saldo = 300;
-  B.saldo = 110;
-  printf
-    ("valor na conta A: %d\n valor na conta B: %d\n qual deseja esvaziar?\n",
-     A.saldo, B.saldo);
-
-
-  
-    
-      scanf ("%c", &r);
-
-      if (r == 'A')
-	{
-
-	  from = &A;
+  A.saldo = 100;
+  B.saldo = 100;
+   from = &A;
 	  to = &B;
 
-	}
-      if (r == 'B')
-	{
-
-	  from = &B;
-	  to = &A;
-
-	}
-    
-  printf ("Transferindo  para a conta c2\n");
+  
   valor = from->saldo / 100;
 
   int id[thread];
@@ -128,14 +122,14 @@ main ()
     }
   for (i = 0; i < thread; i++)
     {
-      
+
       pthread_join (filosofo[i], NULL);	// aguarda tC)rmino das threads
     }
 
   printf ("valor na conta A: %d\n valor na conta B: %d\n", A.saldo, B.saldo);
 
   free (stack);
-  printf ("TransferC*ncias concluC-das e memC3ria liberada.\n");
+  //printf ("TransferC*ncias concluC-das e memC3ria liberada.\n");
 
   return 0;
 }
