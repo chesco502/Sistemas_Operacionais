@@ -1,0 +1,11 @@
+logs:
+//////////////////////
+thread 3 valor de pi :-0.000333 
+thread 0 valor de pi :3.137259 
+thread 1 valor de pi :3.134593 
+thread 2 valor de pi :3.136593 
+Pi aproximado com N  1000 e com 4 threads : 3.1345926853
+/////////////////////
+a) cada thread obtém um valor de Pi diferente pois compartilham o espaço de memoria da variavel sum. Dessa forma, ocorre uma condiçao de corrida, onde todas as threads
+estao disputando pelo valor da variavel sum entao quando uma thread altera o valor de sum ira infleenciar no resultado de todas as outras leevando a erros de calculo. 
+b) agora cada thread esta em execuçao por vez, dessa forma nao há mais condiçao de corrida eliminando a chance de erros de calculo!!
